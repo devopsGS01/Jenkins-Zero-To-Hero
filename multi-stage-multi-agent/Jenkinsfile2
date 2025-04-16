@@ -2,10 +2,9 @@ pipeline {
   agent none
 
   stages {
-    
     stage('Back-end: Build API') {
       agent {
-        docker { image 'maven:3.8.1-eclipse-temurin-17-alpine' }
+        docker { image 'maven:3.8.1-openjdk-11' }
       }
       steps {
         checkout scm
@@ -15,46 +14,14 @@ pipeline {
       }
     }
 
-    stage('Back-end: Run Tests') {
-      agent {
-        docker { image 'maven:3.8.1-eclipse-temurin-17-alpine' }
-      }
-      steps {
-        dir('backend-service') {
-          sh 'mvn test'
-        }
-      }
-    }
-
     stage('Front-end: Install & Build') {
       agent {
-        docker { image 'node:18-alpine' }
+        docker { image 'node:16-alpine' }
       }
       steps {
         dir('frontend-app') {
           sh 'npm install'
           sh 'npm run build'
-        }
-      }
-    }
-
-    stage('Front-end: Deploy') {
-      agent {
-        docker { image 'node:18-alpine' }
-      }
-      steps {
-        dir('frontend-app') {
-          sh 'npm run deploy'
-        }
-      }
-    }
-
-    stage('Back-end: Deploy API') {
-      agent any
-      steps {
-        dir('backend-service') {
-          // Use rsync, scp, or call an API to deploy
-          sh 'echo "Deploying backend service..."'
         }
       }
     }
